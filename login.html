@@ -8,8 +8,10 @@
   <!-- Bootstrap 5 CSS (CDN) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
+  <!-- Supabase JS (CDN) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
   <style>
-    /* Sedikit styling custom agar tampilan lebih modern */
     body {
       background: linear-gradient(180deg, #f8fafc 0%, #eef2f7 100%);
       min-height: 100vh;
@@ -18,7 +20,6 @@
       justify-content: center;
       padding: 2rem;
     }
-
     .card-login {
       max-width: 420px;
       width: 100%;
@@ -26,7 +27,6 @@
       border-radius: 12px;
       box-shadow: 0 6px 20px rgba(35, 50, 80, 0.08);
     }
-
     .brand {
       width: 48px;
       height: 48px;
@@ -40,7 +40,6 @@
       font-size: 20px;
       margin-right: .5rem;
     }
-
     .form-footer {
       font-size: .9rem;
     }
@@ -60,8 +59,7 @@
             </div>
 
             <!-- Login form -->
-            <!-- Ganti action ke endpoint server Anda jika ada -->
-            <form id="loginForm" class="needs-validation" novalidate action="#" method="POST">
+            <form id="loginForm" class="needs-validation" novalidate>
               <div class="mb-3">
                 <label for="inputEmail" class="form-label">Email</label>
                 <input
@@ -114,31 +112,12 @@
                 <button type="submit" class="btn btn-success btn-lg">Masuk</button>
               </div>
 
-              <div class="text-center mb-3">
-                <small class="text-muted">atau masuk dengan</small>
-              </div>
+              <div id="loginMessage" class="text-center small"></div>
 
-              <div class="d-grid gap-2 mb-3">
-                <button type="button" class="btn btn-outline-primary">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-google me-2" viewBox="0 0 16 16">
-                    <path d="M8.16 5.86v2.92h4.6c-.2 1.18-1.4 3.45-4.6 3.45-2.77 0-5.04-2.28-5.04-5.08 0-2.8 2.27-5.08 5.04-5.08 1.57 0 2.62.67 3.22 1.25l2.2-2.12C12.54 1.07 10.6 0 8.16 0 3.7 0 .2 3.57.2 8c0 4.43 3.5 8 7.96 8 4.6 0 7.67-3.21 7.67-7.73 0-.52-.06-.9-.11-1.41H8.16z"/>
-                  </svg>
-                  Masuk dengan Google
-                </button>
-                <button type="button" class="btn btn-outline-secondary">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github me-2" viewBox="0 0 16 16">
-                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49C3.73 13.91 3.28 12.74 3.28 12.74c-.36-.92-.88-1.17-.88-1.17-.72-.49.05-.48.05-.48.8.06 1.22.83 1.22.83.71 1.22 1.87.87 2.33.66.07-.52.28-.87.51-1.07-2.22-.25-4.55-1.11-4.55-4.95 0-1.09.39-1.98 1.03-2.67-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02A9.56 9.56 0 0 1 8 3.13c.85.004 1.71.115 2.5.337 1.9-1.29 2.74-1.02 2.74-1.02.55 1.38.2 2.4.1 2.65.64.69 1.03 1.58 1.03 2.67 0 3.85-2.34 4.7-4.57 4.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.19 0 .21.15.46.55.38C13.71 14.53 16 11.54 16 8c0-4.42-3.58-8-8-8z"/>
-                  </svg>
-                  Masuk dengan GitHub
-                </button>
-              </div>
-
-              <div class="text-center form-footer">
+              <div class="text-center form-footer mt-3">
                 Belum punya akun? <a href="#">Daftar di sini</a>
               </div>
             </form>
-            <!-- End form -->
-
           </div>
         </div>
 
@@ -147,11 +126,16 @@
     </div>
   </main>
 
-  <!-- Bootstrap JS Bundle (includes Popper) -->
+  <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Toggle show/hide password
+    // Konfigurasi Supabase
+    const SUPABASE_URL = "https://vnyljyshijbwuvpmcvbd.supabase.co"; // Ganti dengan Project URL
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZueWxqeXNoaWpid3V2cG1jdmJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkyODczMjQsImV4cCI6MjA3NDg2MzMyNH0.8OY69qUkU3xDrPC78rpPabu4-haTfLLGUnCKSCRoKBc"; // Ganti dengan Anon Key
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Toggle password
     (function () {
       const toggle = document.getElementById('togglePassword');
       const pwd = document.getElementById('inputPassword');
@@ -161,34 +145,31 @@
       toggle.addEventListener('click', function () {
         const type = pwd.getAttribute('type') === 'password' ? 'text' : 'password';
         pwd.setAttribute('type', type);
-        // toggle icon
         eyeOpen.classList.toggle('d-none');
         eyeClosed.classList.toggle('d-none');
-        // update aria-label
-        toggle.setAttribute('aria-label', type === 'password' ? 'Tampilkan kata sandi' : 'Sembunyikan kata sandi');
       });
     })();
 
-    // Bootstrap form validation (client-side)
-    (function () {
-      'use strict';
-      const forms = document.querySelectorAll('.needs-validation');
-      Array.prototype.slice.call(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-          } else {
-            // Jika ingin submit via AJAX, batalkan default dan lakukan request di sini.
-            // Contoh:
-            // event.preventDefault();
-            // fetch('/login', { method: 'POST', body: new FormData(form) })...
-            // Untuk demo ini biarkan form submit biasa (action="#").
-          }
-          form.classList.add('was-validated');
-        }, false);
+    // Form login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('inputEmail').value;
+      const password = document.getElementById('inputPassword').value;
+      const msg = document.getElementById('loginMessage');
+
+      msg.innerHTML = "Sedang memproses...";
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
       });
-    })();
+
+      if (error) {
+        msg.innerHTML = `<span class="text-danger">❌ Login gagal: ${error.message}</span>`;
+      } else {
+        msg.innerHTML = `<span class="text-success">✅ Selamat datang ${data.user.email}</span>`;
+      }
+    });
   </script>
 </body>
 </html>
